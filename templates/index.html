@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Value Prediction</title>
+</head>
+<body>
+    <h1>Player Value Prediction</h1>
+    <form id="prediction-form" action="/predict" method="POST">
+        <label for="overall">Overall:</label>
+        <input type="number" id="overall" name="overall" value="75" required><br>
+
+        <label for="potential">Potential:</label>
+        <input type="number" id="potential" name="potential" value="80" required><br>
+
+        <label for="wage_eur">Wage (EUR):</label>
+        <input type="number" id="wage_eur" name="wage_eur" value="50000" required><br>
+
+        <label for="release_clause_eur">Release Clause (EUR):</label>
+        <input type="number" id="release_clause_eur" name="release_clause_eur" value="1000000" required><br>
+
+        <!-- Add the submit button to trigger the prediction -->
+        <button type="submit">Predict</button>
+    </form>
+    <!-- Display the predicted value here -->
+    <div id="result">Predicted Next Year's Value: $0</div>
+
+    <script>
+        // Function to update the predicted value
+        function updatePredictedValue() {
+            const data = {
+                overall: parseFloat(document.querySelector('#overall').value),
+                potential: parseFloat(document.querySelector('#potential').value),
+                wage_eur: parseFloat(document.querySelector('#wage_eur').value),
+                release_clause_eur: parseFloat(document.querySelector('#release_clause_eur').value)
+            };
+            
+            
+            // Send a POST request to the Flask /predict route
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result
+                document.querySelector('#result').innerText = `Predicted Next Year's Value: $${data.predicted_value}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Add an event listener to the form to trigger the prediction on form submission
+        document.querySelector('#prediction-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the form from submitting
+            updatePredictedValue(); // Update the predicted value
+        });
+    </script>
+</body>
+</html>
